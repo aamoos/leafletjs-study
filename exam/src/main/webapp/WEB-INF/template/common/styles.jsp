@@ -4,6 +4,10 @@
 
 <!-- leaflet -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin="" />
+<link rel="stylesheet" href="/css/leaflet.draw.css" />
 
+<!-- leaflet draw -->
+<link rel="stylesheet" href="/libs/leaflet.css"/>
+<link rel="stylesheet" href="/css/leaflet.draw.css"/>
 
 <link rel="stylesheet" href="/css/common.css" />

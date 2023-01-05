@@ -26,10 +26,13 @@
 	    const lat = position.coords.longitude;
 	    vworldWmts(lon, lat);
 	}
+	
+	//내좌표값 가져올때 error
 	function onGeoError(){
 	    alert("Can't find you. No weather for you.");
 	}
 
+	//vowld wmts 배경지도
 	function vworldWmts(lon, lat){
 		//apikey
 		const apiKey = $("#apiKey").val();

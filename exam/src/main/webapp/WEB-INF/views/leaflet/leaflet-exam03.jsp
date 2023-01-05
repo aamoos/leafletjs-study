@@ -5,7 +5,7 @@
 <!-- 		<p class="lead">- openstreetmap</p> -->
 <!-- 		<div id="map"></div> -->
 <!-- 		<br> -->
-		<p class="lead">- 출발 도착 버튼 클릭시 마커찍기</p>
+		<p class="lead">- 레이어변경</p>
 		<div id="map"></div>
       </main>
 </body>
@@ -16,6 +16,9 @@
 	let leafletMap = "";
 	let startMarker = "";
 	let finishMarker = "";
+	let contextMenuFlag = true;
+	
+	//apikey
 	const apiKey = $("#apiKey").val();
 	
 	$(function(){
@@ -43,30 +46,55 @@
 
 	//vowld wmts 배경지도
 	function vworldWmts(){
-		
 		//leaflet 지도 띄우기 (EPSG : 4326)
 		leafletMap = L.map('map').setView([lon, lat], 15)
 		
 		L.tileLayer("http://api.vworld.kr/req/wmts/1.0.0/"+apiKey+"/Base/{z}/{y}/{x}.png").addTo(leafletMap);
 		
+		//해당 플래그가 true일때만 동작
 		//맵에 오른쪽마우스 클릭이벤트
-		leafletMap.on('contextmenu', onMapClick);
+		leafletMap.on('contextmenu', rightMouseClick);
+		
+		//layer변경
+		changeLayer(leafletMap)
 	}
 	
-	//마우스 오른쪽 클릭시
-	function onMapClick(e) {
-	    lon = e.latlng.lat;
-	    lat = e.latlng.lng;
+	//layer 변경
+	function changeLayer(leafletMap){
+		
+		vworld = L.tileLayer("http://api.vworld.kr/req/wmts/1.0.0/"+apiKey+"/Base/{z}/{y}/{x}.png", { maxZoom: 18}),
+		drawnItems = L.featureGroup().addTo(leafletMap);
+		
+		//레이어 변경
+		L.control.layers({
+			'vworld' : vworld.addTo(leafletMap),
+			'osm': L.tileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+				attribution: 'osm'
+			}),
+			'google': L.tileLayer('http://www.google.cn/maps/vt?lyrs=s@189&gl=cn&x={x}&y={y}&z={z}', {
+				attribution: 'google'
+			})
+		}, { 'drawlayer': drawnItems }, { position: 'topleft', collapsed: false }).addTo(leafletMap);		
+	}
+	
+	//오른쪽 마우스 클릭
+	function rightMouseClick(e) {
+		
+	    const lon = e.latlng.lat;
+	    const lat = e.latlng.lng;
 	    
 	    const popDiv = "<div class='list-group'><a style='text-align: center;' href='javascript:void(0);' onclick='startBtnClicked("+lon+", "+lat+")' class='list-group-item list-group-item-action'>출발</a><a style='text-align: center;' href='javascript:void(0);' onclick='finishBtnClicked("+lon+", "+lat+")' class='list-group-item list-group-item-action'>도착</a></div>";
-	    
+  
 	    console.log("팝업 lon : " + lon, "lat : " + lat)
 	    
-	  	//오른쪽마우스 클릭이벤트
-		const popup = L.popup()
-	    .setLatLng([lon, lat])
-	    .setContent(popDiv)
-	    .openOn(leafletMap);
+	    //contextMenuFlag가 true일때만 팝업 show
+	    if(contextMenuFlag){
+	    	//오른쪽마우스 클릭이벤트
+			const popup = L.popup()
+		    .setLatLng([lon, lat])
+		    .setContent(popDiv)
+		    .openOn(leafletMap);
+	    }
 	}
 	
 	//출발버튼 클릭
@@ -79,6 +107,7 @@
 		
 		const startIcon = L.icon({
 		    iconUrl: '/images/start-marker.png',
+
 		    iconSize:     [30, 30], // size of the icon
 		});
 
@@ -134,7 +163,7 @@
 //         	marker._icon.classList.remove("btn__close");
         });
         
-		//마우스 클릭
+      //마우스 클릭
         marker.on('click', function (e) {
         	marker.remove();
         });

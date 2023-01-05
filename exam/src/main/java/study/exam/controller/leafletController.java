@@ -22,4 +22,29 @@ public class leafletController {
 		return "/tiles/view/leaflet/leaflet-exam02";
 	}
 	
+	@GetMapping("/leaflet/exam03")
+	public String leafletExam03() {
+		return "/tiles/view/leaflet/leaflet-exam03";
+	}
+	
+	@GetMapping("/leaflet/exam04")
+	public String leafletExam04() {
+		return "/tiles/view/leaflet/leaflet-exam04";
+	}
+	
+	@GetMapping("/leaflet/exam05")
+	public String leafletExam05() {
+		return "/tiles/view/leaflet/leaflet-exam05";
+	}
+	
+	@GetMapping("/leaflet/exam06")
+	public String leafletExam06() {
+		return "/tiles/view/leaflet/leaflet-exam06";
+	}
+	
+	@GetMapping("/leaflet/exam07")
+	public String leafletExam07() {
+		return "/tiles/view/leaflet/leaflet-exam07";
+	}
+	
 }
