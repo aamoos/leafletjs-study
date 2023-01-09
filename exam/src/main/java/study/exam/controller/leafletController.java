@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 @Controller
 public class leafletController {
 	
-	@GetMapping("/")
+	@GetMapping("/leaflet")
 	public String leafletTutorial() {
 		return "/tiles/view/leaflet/leaflet";
 	}

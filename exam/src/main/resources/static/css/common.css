@@ -12,3 +12,6 @@
 	left: -50px;
 	width:130px;
 }
+
+ /* paginate */
+.pagination a.on {color:#fff;font-weight:600;background:#a0afbf;}

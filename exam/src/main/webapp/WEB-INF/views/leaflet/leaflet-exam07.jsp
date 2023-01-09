@@ -25,6 +25,7 @@
 	let drawlat = "";
 	let drawnItems = "";
 	let layer = "";
+	let polyLineMarkerArray = [];
 	
 	//apikey
 	const apiKey = $("#apiKey").val();
@@ -111,23 +112,27 @@
 
 		//created
 		leafletMap.on(L.Draw.Event.CREATED, function (event) {
+			
+			console.log(polyLineMarkerArray);
+			
 			layer = event.layer;
 			layerType = event.layerType;
+			layer.marker = polyLineMarkerArray;
 			drawnItems.addLayer(layer);
 			//polyline 일경우
 			if(layerType == 'polyline') {
-				createAreaTooltip(layer);
+				updateAreaTooltip(layer);
 		    }else if(layerType == 'polygon'){
-		    	createAreaTooltip(layer);
+		    	updateAreaTooltip(layer);
 		    }else if(layerType == 'circle'){
-		    	createAreaTooltip(layer);
+		    	updateAreaTooltip(layer);
 		    }
-			  
+			
+			polyLineMarkerArray = [];
 		});
 		
 		//그리기 도구 열때
 		leafletMap.on('draw:toolbaropened', function (e) {
-			
 			contextMenuFlag = false;
 		});
 		
@@ -140,37 +145,28 @@
 		leafletMap.on('draw:drawstart', function (e) {
 			layerType = e.layerType;
 		});
+		
+		leafletMap.on('draw:deletestart', function (e) {
+			contextMenuFlag = true;
+			layerType = "deletePolyline";
+		});
+		
+		//delete 눌렀을때
+		leafletMap.on('draw:deleted', function (e) {
+			console.log(e);
+			
+			var obj = e.layers._layers;
+			var marker = Object.values(obj)[0].marker;
+			
+			for(var i=0; i<marker.length; i++){
+				marker[i].remove();
+			}
+			
+		});
+		
+		
+
 	}
-	
-	//폴리곤 tooltip 생성
-	function createAreaTooltip(layer) {
-		console.log(layer.areaTooltip);
-        if(layer.areaTooltip) {
-            return;
-        }
-
-        layer.areaTooltip = L.tooltip({
-            permanent: true,
-            direction: 'center',
-            className: 'area-tooltip'
-        });
-
-        layer.on('remove', function(event) {
-            layer.areaTooltip.remove();
-        });
-
-        layer.on('add', function(event) {
-            updateAreaTooltip(layer);
-            layer.areaTooltip.addTo(leafletMap);
-        });
-
-        if(leafletMap.hasLayer(layer)) {
-            updateAreaTooltip(layer);
-            console.log(layer.areaTooltip);
-            //얘가문제
-            layer.areaTooltip.addTo(leafletMap);
-        }
-    }
 	
 	//폴리곤 영역 update
 	function updateAreaTooltip(layer) {
@@ -179,25 +175,27 @@
         let content = "";
         
         if(layerType == "polyline"){
+        	
         	latlng = layer.getCenter();
         	let coords = layer.getLatLngs();
 			let length = 0;
 			for (let i = 0; i < coords.length - 1; i++) {
 				length += coords[i].distanceTo(coords[i + 1]);
 			}
-			console.log(coords[coords.length - 1]);
-		    
+			
 			//반올림
 			let totalMeter = meterCalcurate(length);
 			content = "<div class='list-group'><a style='text-align: center;' href='javascript:void(0);' class='list-group-item list-group-item-action'>총거리 : "+totalMeter+"</a></div>"
-			latlng = [coords[coords.length - 1].lat, coords[coords.length - 1].lng+0.004];
+			latlng = [coords[coords.length - 1].lat, coords[coords.length - 1].lng];
+			
+			
+			//todo layout에 marker 추가
 			
         }else if(layerType == "polygon"){
         	 let area = L.GeometryUtil.geodesicArea(layer.getLatLngs()[0]);
-        	 let readableArea = L.GeometryUtil.readableArea(area, true);
-        	 let totalArea = String((Number(readableArea.split(" ")[0])*10000).toFixed(1)).replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",")+"㎡";
+        	 area = area.toFixed(1).replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",")+"㎡";
         	 latlng = layer.getCenter();
-        	 content = "<div class='list-group'><a style='text-align: center;' href='javascript:void(0);' class='list-group-item list-group-item-action'>총면적 : "+totalArea+"</a></div>"
+        	 content = "<div class='list-group'><a style='text-align: center;' href='javascript:void(0);' class='list-group-item list-group-item-action'>총면적 : "+area+"</a></div>"
         }
         
         else if(layerType == "circle"){
@@ -205,22 +203,18 @@
         	latlng = layer.getLatLng();
         	content = "<div class='list-group'><a style='text-align: center;' href='javascript:void(0);' class='list-group-item list-group-item-action'>총반경 : "+radius+"m</a></div>"
         }
-        debugger;
-        
-        //ha -> 제곱미터로 변환후 소수 첫째자리까지 반올림후 3째자리까지 나누기
-        layer.areaTooltip
-            .setContent(content)
-            .setLatLng(latlng);
-        
+         
         //polyline인경우 offset 처리
         if(layerType == "polyline"){
-        	layer.areaTooltip.options.offset = [0,80];	
+        	layer.bindTooltip(content, {className: "polylineBindTooltip", permanent: true, direction:"center", offset: L.point(latlng) })
+        } else{
+        	layer.bindTooltip(content, {className: "polylineBindTooltip", permanent: true, direction:"center"})
         }
+        
     }
 	
-	//왼쪽마우스 클릭
-	function leftMouseClick(e){
-		
+	//마커찍기 이벤트
+	function drawMarker(e){
 		if(!contextMenuFlag){
 			//선
 			if(layerType == "polyline"){
@@ -245,6 +239,9 @@
 				});
 				
 				polyLineMarker.addTo(leafletMap);
+				polyLineMarker.keyNum = "aaaa";
+				
+				polyLineMarkerArray.push(polyLineMarker);
 				
 				if(length > 1){
 					let distance = lineArray[length-2].distanceTo(lineArray[length-1]);
@@ -255,6 +252,8 @@
 					polyLineMarker.bindTooltip(distance, {direction: 'top',noWrap: true, opacity: 0.9, permanent: true}).openTooltip();
 				}	
 			}
+		}else{
+			
 		}
 	}
 	
@@ -271,9 +270,14 @@
 		return distance;
 	}
 	
+	//왼쪽마우스 클릭
+	function leftMouseClick(e){
+		drawMarker(e);
+	}
+	
 	//오른쪽 마우스 클릭
 	function rightMouseClick(e) {
-		
+		drawMarker(e);
 	    const lon = e.latlng.lat;
 	    const lat = e.latlng.lng;
 	    

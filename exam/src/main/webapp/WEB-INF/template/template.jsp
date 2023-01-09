@@ -6,7 +6,7 @@
 		<tiles:insertAttribute name="meta"/>
 		<tiles:insertAttribute name="styles"/>
 		<tiles:insertAttribute name="scripts"/>
-<%-- 		<tiles:insertAttribute name="contents-js" flush="true"/> --%>
+		<tiles:insertAttribute name="contents-js" flush="true"/>
 	</head>
 	<body>
 <!-- 		<div class="cover-container d-flex h-100 p-3 mx-auto flex-column"> -->

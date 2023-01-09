@@ -13,31 +13,31 @@
 	<!-- Depth(4) : / A / B / C / D / E.jsp -->
 	<definition name="/tiles/view/*/*/*/*/*"      extends="tiles/default/template">
 		<put-attribute name="contents"           value="/WEB-INF/views/{1}/{2}/{3}/{4}/{5}.jsp"/>
-<!-- 		<put-attribute name="contents-js"        value="/WEB-INF/views/{1}/{2}/{3}/{4}/{5}-js.jsp"/> -->
+		<put-attribute name="contents-js"        value="/WEB-INF/views/{1}/{2}/{3}/{4}/{5}-js.jsp"/>
 	</definition>
 
 	<!-- Depth(3) : / A / B / C / D.jsp -->
 	<definition name="/tiles/view/*/*/*/*"        extends="tiles/default/template">
 		<put-attribute name="contents"           value="/WEB-INF/views/{1}/{2}/{3}/{4}.jsp"/>
-<!-- 		<put-attribute name="contents-js"        value="/WEB-INF/views/{1}/{2}/{3}/{4}-js.jsp"/> -->
+		<put-attribute name="contents-js"        value="/WEB-INF/views/{1}/{2}/{3}/{4}-js.jsp"/>
 	</definition>
 
 	<!-- Depth(2) : / A / B / C.jsp -->
 	<definition name="/tiles/view/*/*/*"          extends="tiles/default/template">
 		<put-attribute name="contents"           value="/WEB-INF/views/{1}/{2}/{3}.jsp"/>
-<!-- 		<put-attribute name="contents-js"        value="/WEB-INF/views/{1}/{2}/{3}-js.jsp"/> -->
+		<put-attribute name="contents-js"        value="/WEB-INF/views/{1}/{2}/{3}-js.jsp"/>
 	</definition>
 
 	<!-- Depth(1) : / A / B.jsp -->
 	<definition name="/tiles/view/*/*"            extends="tiles/default/template">
 		<put-attribute name="contents"           value="/WEB-INF/views/{1}/{2}.jsp"/>
-<!-- 		<put-attribute name="contents-js"        value="/WEB-INF/views/{1}/{2}-js.jsp"/> -->
+		<put-attribute name="contents-js"        value="/WEB-INF/views/{1}/{2}-js.jsp"/>
 	</definition>
 
 	<!-- Depth(0) : / A.jsp -->
 	<definition name="/tiles/view/*"              extends="tiles/default/template">
 		<put-attribute name="contents"           value="/WEB-INF/views/{1}.jsp"/>
-<!-- 		<put-attribute name="contents-js"        value="/WEB-INF/views/{1}-js.jsp"/> -->
+		<put-attribute name="contents-js"        value="/WEB-INF/views/{1}-js.jsp"/>
 	</definition>
 	
 	<!-- 화면 영역 분할 등에서 사용함 -->

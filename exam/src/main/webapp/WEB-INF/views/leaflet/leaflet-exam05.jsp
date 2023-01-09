@@ -116,7 +116,7 @@
 			drawnItems.addLayer(layer);
 			//polyline 일경우
 			if(layerType == 'polyline') {
-				createAreaTooltip(layer);
+				updateAreaTooltip(layer);
 		    }
 		});
 		
@@ -136,36 +136,6 @@
 			layerType = e.layerType;
 		});
 	}
-	
-	//tooltip 생성
-	function createAreaTooltip(layer) {
-		console.log(layer.areaTooltip);
-        if(layer.areaTooltip) {
-            return;
-        }
-
-        layer.areaTooltip = L.tooltip({
-            permanent: true,
-            direction: 'center',
-            className: 'area-tooltip'
-        });
-
-        layer.on('remove', function(event) {
-            layer.areaTooltip.remove();
-        });
-
-        layer.on('add', function(event) {
-            updateAreaTooltip(layer);
-            layer.areaTooltip.addTo(leafletMap);
-        });
-
-        if(leafletMap.hasLayer(layer)) {
-            updateAreaTooltip(layer);
-            console.log(layer.areaTooltip);
-            //얘가문제
-            layer.areaTooltip.addTo(leafletMap);
-        }
-    }
 	
 	//툴팁 content 업데이트
 	function updateAreaTooltip(layer) {
@@ -188,14 +158,11 @@
 			
         }
         
-        //ha -> 제곱미터로 변환후 소수 첫째자리까지 반올림후 3째자리까지 나누기
-        layer.areaTooltip
-            .setContent(content)
-            .setLatLng(latlng);
-        
         //polyline인경우 offset 처리
         if(layerType == "polyline"){
-        	layer.areaTooltip.options.offset = [0,80];	
+        	layer.bindTooltip(content, {className: "polylineBindTooltip", permanent: true, direction:"center", offset: L.point(latlng) })
+        } else{
+        	layer.bindTooltip(content, {className: "polylineBindTooltip", permanent: true, direction:"center"})
         }
     }
 	
